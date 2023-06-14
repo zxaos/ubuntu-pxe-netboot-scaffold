@@ -1,0 +1,4 @@
+.DS_Store
+*.iso
+user-data
+srv/boot/grubx64.efi

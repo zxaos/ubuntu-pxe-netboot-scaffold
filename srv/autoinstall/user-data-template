@@ -1,0 +1,60 @@
+#cloud-config
+autoinstall:
+  apt:
+    disable_components: []
+    fallback: abort
+    geoip: true
+    mirror-selection:
+      primary:
+      - country-mirror
+      - arches:
+        - amd64
+        - i386
+        uri: http://archive.ubuntu.com/ubuntu
+      - arches:
+        - s390x
+        - arm64
+        - armhf
+        - powerpc
+        - ppc64el
+        - riscv64
+        uri: http://ports.ubuntu.com/ubuntu-ports
+    preserve_sources_list: false
+  codecs:
+    install: false
+  drivers:
+    install: false
+  identity:
+    hostname: ubuntu-autoinstalled-hostname
+    password: my-crypted-password-here
+    realname: My Real Name
+    username: myusername
+  kernel:
+    package: linux-generic
+  keyboard:
+    layout: us
+    toggle: null
+    variant: ''
+  late-commands:
+    - echo 'DROPBEAR_OPTIONS="-I 180 -j -k -s -c cryptroot-unlock"' >> /target/etc/dropbear/initramfs/dropbear.conf
+    - echo 'ssh-ed25519 my-ssh-public-key' > /target/etc/dropbear/initramfs/authorized_keys
+    - curtin in-target -- update-initramfs -u
+  locale: en_US.UTF-8
+  packages:
+    - dropbear-initramfs
+  refresh-installer:
+    update: yes
+  source:
+    id: ubuntu-server
+    search_drivers: false
+  ssh:
+    allow-pw: false
+    authorized-keys:
+    - 'ssh-ed25519 my-ssh-public-key'
+    install-server: true
+  storage:
+    layout:
+      name: lvm
+      password: my_plaintext_LUKS_unlock_password_this_seems_not_ideal
+  updates: all
+  version: 1
